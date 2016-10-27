@@ -113,6 +113,7 @@ placement         | string   | Yes      | 'auto'      | How to position the popo
 onClose           | function | Yes      |             | Callback to be fired when the user taps the popover
 customShowHandler | function | Yes      |             | Custom show animation handler - uses a [react-tween-state wrapper](https://github.com/jeanregisser/react-native-popover/blob/master/Transition.js) API in order to show the modal. See [default show handler](https://github.com/jeanregisser/react-native-popover/blob/754a87b0befccfe534774f3166765732a99bfddf/Popover.js#L185-L192).
 customHideHandler | function | Yes      |             | Custom hide animation handler - uses a [react-tween-state wrapper](https://github.com/jeanregisser/react-native-popover/blob/master/Transition.js) API in order to hide the modal. See [default hide handler](https://github.com/jeanregisser/react-native-popover/blob/754a87b0befccfe534774f3166765732a99bfddf/Popover.js#L193-L200).
+animationDuration | number   | Yes      | 300         | Duration of the animation if using the default animation handler
 
 rect is an object with the following properties: `{x: number, y: number, width: number, height: number}`
 

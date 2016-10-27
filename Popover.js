@@ -41,7 +41,8 @@ var Popover = React.createClass({
         onClose: PropTypes.func,
         title: PropTypes.node,
         mode: PropTypes.string,
-        layoutDirection: PropTypes.string
+        layoutDirection: PropTypes.string,
+        animationDuration: PropTypes.number,
     },
 
     getInitialState() {
@@ -66,7 +67,8 @@ var Popover = React.createClass({
             arrowSize: DEFAULT_ARROW_SIZE,
             placement: PLACEMENT_OPTIONS.AUTO,
             onClose: noop,
-            mode: 'popover'
+            mode: 'popover',
+            animationDuration: 300,
         };
     },
 
@@ -320,7 +322,6 @@ var Popover = React.createClass({
     },
 
     _startDefaultAnimation({show, doneCallback}) {
-        var animDuration = 300;
         var values = this.state.defaultAnimatedValues;
         var translateOrigin = this.getTranslateOrigin();
 
@@ -329,7 +330,7 @@ var Popover = React.createClass({
         }
 
         var commonConfig = {
-            duration: animDuration,
+            duration: this.props.animationDuration,
             easing: show ? Easing.out(Easing.back()) : Easing.inOut(Easing.quad),
         }
 
