@@ -84,7 +84,12 @@ var Popover = React.createClass({
         this.updateState(Object.assign(geom, {contentSize, isAwaitingShow: undefined}), () => {
             // Once state is set, call the showHandler so it can access all the geometry
             // from the state
-            isAwaitingShow && this._startAnimation({show: true});
+
+            // If this is no longer visible, that means that the popover was dismissed while
+            // we were waiting for things to update. Instead of calling the show animation
+            // we should instead call the hide animation so that we unwind the state.
+            var isVisible = !!this.props.isVisible;
+            isAwaitingShow && this._startAnimation({show: isVisible});
         });
     },
 
@@ -316,14 +321,26 @@ var Popover = React.createClass({
     },
 
     _startAnimation({show}) {
-        var handler = this.props.startCustomAnimation || this._startDefaultAnimation;
-        handler({show, doneCallback: () => this.setState({isTransitioning: false})});
-        this.setState({isTransitioning: true});
+      var handler = this.props.startCustomAnimation || this._startDefaultAnimation;
+      // It's important that we wait until after transitioning is set to call the handler.
+      // Otherwise if the handler is too fast (e.g. if someone does a no-op animation),
+      // then isTransitioning will go back to false before the content component has had
+      // a chance to unmount.  If this happens, then onLayout won't get called the next
+      // time the popover is asked to be shown since the component was already mounted.
+      this.setState(
+        {isTransitioning: true},
+        () => handler({show, doneCallback: () => this.setState({isTransitioning: false})})
+      );
     },
 
     _startDefaultAnimation({show, doneCallback}) {
         var values = this.state.defaultAnimatedValues;
         var translateOrigin = this.getTranslateOrigin();
+
+        if (Number.isNaN(translateOrigin.x) || Number.isNaN(translateOrigin.y)) {
+          translateOrigin = new Point(0, 0);
+          console.warn("Unable to animate position of popover. This probably means the component was animated before it was mounted, after it was unmounted, or fromRect was incorrectly set.");
+        }
 
         if (show) {
             values.translate.setValue(translateOrigin);
